@@ -29,7 +29,7 @@ public class PhysicsBall extends PhysicsObject{
 
         Point p = window.toGraphicsPoint(body.getWorldCenter());
         g.setColor(Color.WHITE);
-        g.fillOval(p.x,p.y,radius*2,radius*2);
+        g.fillOval(p.x-radius,p.y-radius,radius*2,radius*2);
 
     }
 
