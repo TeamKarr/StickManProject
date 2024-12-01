@@ -1,47 +1,54 @@
 package team.hiddenark.stickmangame;
 
+import com.github.kwhat.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.NativeHookException;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
-import com.sun.jna.platform.mac.CoreFoundation;
-import com.sun.jna.platform.mac.SystemB;
-import com.sun.jna.ptr.PointerByReference;
+import com.sun.jna.platform.WindowUtils;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.platform.win32.WinUser;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.geometry.Vector2;
 import org.dyn4j.world.World;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.Timer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-public class GameWindow extends JFrame implements KeyListener {
+public class GameWindow extends JFrame implements NativeKeyListener {
 
     protected Toolkit toolkit = Toolkit.getDefaultToolkit();
 
     protected ArrayList<GameObject> objects = new ArrayList<GameObject>();
+    protected ArrayList<GameObject> pendingObjects = new ArrayList<GameObject>();
+    protected ArrayList<Body> pendingBody = new ArrayList<Body>();
     protected ArrayList<WindowHandle> windows = new ArrayList<WindowHandle>();
 
-    World physics = new World();
+    World<Body> physics = new World<Body>();
     private boolean running = false; // Control for the game loop
 
-
+    private WinDef.HWND mainWindow;
 
     public GameWindow(String title) {
         super(title);
+        this.setTitle(title);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setUndecorated(true);
-        this.setSize(toolkit.getScreenSize());
+        this.setSize(toolkit.getScreenSize().width,toolkit.getScreenSize().height-getBottomBarHeight());
         this.setLocationRelativeTo(null);
         this.setAlwaysOnTop(true);
-        this.rootPane.
+//        this.setFocusableWindowState(false);
+        try {
+            GlobalScreen.registerNativeHook();
+            GlobalScreen.addNativeKeyListener(this);
+        } catch(NativeHookException e){
+            e.printStackTrace();
+        }
 
-        addKeyListener(this);
 
         JPanel panel = new JPanel() {
             @Override
@@ -70,9 +77,36 @@ public class GameWindow extends JFrame implements KeyListener {
         physics.setGravity(World.EARTH_GRAVITY);
 
 
+        // get all windows
+
 
     }
 
+    public void manageWindows(){
+//        WindowHandleGetter getter = new WindowHandleGetter(this);
+//        mainWindow = getter.getWindowId();
+//
+//        if (this instanceof Component){
+//            System.out.println("Component");
+//        }
+
+        User32.INSTANCE.EnumWindows((hWnd, data) -> {
+            if (User32.INSTANCE.IsWindow(hWnd) && User32.INSTANCE.IsWindowVisible(hWnd)) {
+
+//
+                String title = WindowUtils.getWindowTitle(hWnd);
+                if (!title.isEmpty() && !title.contains("Windows Input Experience") && !title.contains("Program Manager")){
+                    WindowHandle window = new WindowHandle(this,hWnd);
+                    System.out.println(window.getTitle());
+                    this.windows.add(window);
+                    this.addObject(window);
+                }
+
+            }
+            return true; // Continue enumeration
+        }, null);
+        System.out.println(windows.size());
+    }
 
 
     public int getBottomBarHeight(){
@@ -86,12 +120,23 @@ public class GameWindow extends JFrame implements KeyListener {
 
     public void gameLoop(double deltaTime){
 //        System.out.println(deltaTime);
-
+        objects.addAll(pendingObjects);
+        pendingObjects = new ArrayList<GameObject>();
+        pendingBody.forEach((b) -> this.physics.addBody(b));
+        pendingBody = new ArrayList<Body>();
 
         physics.update(deltaTime);
 
         objects.forEach((o) -> o.tick(deltaTime));
 
+        objects.forEach((o) -> {
+            if (o instanceof PhysicsObject){
+                if (o.isMarkedForRemoval())
+                    physics.removeBody(((PhysicsObject) o).body);
+            }
+        });
+
+        windows.removeIf(GameObject::isMarkedForRemoval);
         objects.removeIf(GameObject::isMarkedForRemoval);
     }
 
@@ -99,11 +144,11 @@ public class GameWindow extends JFrame implements KeyListener {
 
 
     public void addObject(GameObject o){
-        this.objects.add(o);
+        pendingObjects.add(o);
     }
 
     public void addPhysics(Body b){
-        this.physics.addBody(b);
+        pendingBody.add(b);
     }
 
     public void addObject(PhysicsObject p){
@@ -111,7 +156,7 @@ public class GameWindow extends JFrame implements KeyListener {
         addPhysics(p.getBody());
     }
 
-    double scale = 100;
+    double scale = 500;
     public Point toGraphicsPoint(Vector2 v){
         return new Point(toGUnits(v.x),this.getHeight()-toGUnits(v.y));
     }
@@ -138,7 +183,15 @@ public class GameWindow extends JFrame implements KeyListener {
 
 
     public void start(){
+
+
+
+        manageWindows();
         setVisible(true);
+        mainWindow = User32.INSTANCE.GetForegroundWindow();
+
+
+        System.out.println(WindowUtils.getWindowTitle(mainWindow));
         Timer gameLoop = new Timer(16, e -> {
             double deltaTime = (System.nanoTime() - last) / 1.0E9;
             last = System.nanoTime();
@@ -148,18 +201,8 @@ public class GameWindow extends JFrame implements KeyListener {
         gameLoop.start();
     }
 
-    @Override
-    public void keyTyped(KeyEvent e) {
-
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-
+    public void reAddPhysics(Body body) {
+        this.physics.removeBody(body);
+        this.physics.addBody(body);
     }
 }

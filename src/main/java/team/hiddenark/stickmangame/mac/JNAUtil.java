@@ -37,19 +37,19 @@ public class JNAUtil {
 
             String value;
 
-            if (typeID == CoreFoundationLibrary.INSTANCE.CFStringGetTypeID()) {
-                value = convertCFStringRefToString(valuePointer);
-            } else if (typeID == CoreFoundationLibrary.INSTANCE.CFNumberGetTypeID()) {
-                value = convertCFNumberToString(valuePointer);
-            } else if (typeID == CoreFoundationLibrary.INSTANCE.CFBooleanGetTypeID()) {
-                value = valuePointer.equals(CoreFoundationConstants.kCFBooleanTrue) ? "true" : "false";
-            } else if (typeID == CoreFoundationLibrary.INSTANCE.CFDictionaryGetTypeID()) {
-                value = convertCFDictionaryToString(valuePointer);
-            } else {
-                value = "Unsupported type: " + typeID;
-            }
+//            if (typeID == CoreFoundationLibrary.INSTANCE.CFStringGetTypeID()) {
+//                value = convertCFStringRefToString(valuePointer);
+//            } else if (typeID == CoreFoundationLibrary.INSTANCE.CFNumberGetTypeID()) {
+//                value = convertCFNumberToString(valuePointer);
+//            } else if (typeID == CoreFoundationLibrary.INSTANCE.CFBooleanGetTypeID()) {
+//                value = valuePointer.equals(CoreFoundationConstants) ? "true" : "false";
+//            } else if (typeID == CoreFoundationLibrary.INSTANCE.CFDictionaryGetTypeID()) {
+//                value = convertCFDictionaryToString(valuePointer);
+//            } else {
+//                value = "Unsupported type: " + typeID;
+//            }
 
-            System.out.println("Key: " + key + ", Value: " + value);
+//            System.out.println("Key: " + key + ", Value: " + value);
         }
     }
 
@@ -126,8 +126,8 @@ public class JNAUtil {
 
 
     class CoreFoundationConstants {
-        public static final Pointer kCFBooleanTrue = new Pointer(0x7ff80001); // Pointer for true
-        public static final Pointer kCFBooleanFalse = new Pointer(0x7ff80000); // Pointer for false
+        public final Pointer kCFBooleanTrue = new Pointer(0x7ff80001); // Pointer for true
+        public final Pointer kCFBooleanFalse = new Pointer(0x7ff80000); // Pointer for false
     }
     interface CoreFoundationLibrary extends Library {
         CoreFoundationLibrary INSTANCE = Native.load("CoreFoundation", CoreFoundationLibrary.class);
