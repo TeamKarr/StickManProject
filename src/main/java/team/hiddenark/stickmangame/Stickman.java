@@ -2,9 +2,15 @@ package team.hiddenark.stickmangame;
 
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.BodyFixture;
+import org.dyn4j.dynamics.contact.Contact;
+import org.dyn4j.dynamics.contact.SolvedContact;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Vector2;
+import org.dyn4j.world.ContactCollisionData;
+import org.dyn4j.world.listener.ContactListener;
+
+import team.hiddenark.stickmangame.Goal.GoalGen;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -19,6 +25,8 @@ public class Stickman extends PhysicsObject implements Thinker{
     private Color color;
 
     private ArrayList<Goal> goals = new ArrayList<Goal>();
+    
+    public GoalGen goalGen = new GoalGen(this);
 
     public Stickman(GameWindow window, int x, int y, int s, Color color){
         this.x = x;
@@ -33,18 +41,20 @@ public class Stickman extends PhysicsObject implements Thinker{
         Rectangle rect = new Rectangle(window.toPUnits(w),window.toPUnits(h));
 
         BodyFixture f = new BodyFixture(rect);
-        f.setFriction(2);
+        f.setFriction(3);
 //        f.setRestitution(0.4);
 
         b.addFixture(f);
         b.translate(window.toVector2(x,y));
         b.setAtRestDetectionEnabled(false);
-
-
-//        b.setLinearDamping(4);
+        b.setLinearDamping(2);
 
         b.setMass(MassType.FIXED_ANGULAR_VELOCITY);
         this.body = b;
+        
+        this.window.physics.addContactListener(new ContactListenerInstance());
+        
+        this.setDefaultFilter();
 
         this.setVisible(true);
     }
@@ -59,13 +69,21 @@ public class Stickman extends PhysicsObject implements Thinker{
         this.y = p.y-this.h/2;
 
         if (!goals.isEmpty()){
-            Goal currentGoal = goals.get(0);
-            if (currentGoal.isGoalCompleted()){
-                currentGoal.onComplete();
-                goals.remove(0);
-            } else {
-                currentGoal.act();
-            }
+        	
+        	boolean runNext;
+        	do {
+        		Goal currentGoal = goals.get(0);
+                
+        		runNext = currentGoal.runWithNext;
+                
+                if (currentGoal.isGoalCompleted()){
+                    currentGoal.onComplete();
+                    goals.remove(0);
+                } else {
+                    currentGoal.act();
+                }
+        	} while (runNext);
+            
         }
 
 
@@ -85,6 +103,7 @@ public class Stickman extends PhysicsObject implements Thinker{
     }
 
     public void moveSide(double targetVelocity, double accelerationRate) {
+//    	if (!onGround) return;
 
         System.out.println(targetVelocity);
         // Get the current velocity of the object
@@ -105,6 +124,49 @@ public class Stickman extends PhysicsObject implements Thinker{
         // Set the new velocity, keeping the vertical velocity unchanged
         this.body.setLinearVelocity(new Vector2(newVelocityX, currentVelocity.y));
 //        System.out.println(new Vector2(newVelocityX, currentVelocity.y));
+    }
+    
+    public void createPushWindowGoals(WindowHandle wndh, int direction) {
+    	java.awt.Rectangle bounds = wndh.getBounds();
+    	int runUpDistance = 200;
+    	int runThroughDistance = 100;
+    	int startX = (direction > 0? 
+    			bounds.x-runUpDistance:
+    				bounds.x+bounds.width+runUpDistance);
+    	int endX = (direction > 0? 
+    			window.getWidth()+runThroughDistance:
+    				-runThroughDistance);
+    	
+    	 addGoal(goalGen.createMoveXGoal(startX, 5, 0.5, 20, () -> {
+    		 wndh.enableBody();
+    	 }));
+    	 addGoal(goalGen.createMoveXGoal(endX, 5, 0.5, 20));
+    	
+    	
+    	
+    	// mobe to side
+    	// drop window
+    	// wait for
+    	// 
+    	// move to side of window
+    	// 
+    	
+    	
+//    	wndh.enableBody();
+    	
+    }
+    
+    public void tryJump(double strength) {
+    	if(onGround) {
+    		System.out.println("on ground");
+    		jump(strength);
+    	} else {
+    		System.out.println("not on ground");
+    	}
+    }
+    
+    public void jump(double strength) {
+    	this.body.setLinearVelocity(new Vector2(body.getLinearVelocity().x,strength));
     }
 
 
@@ -150,5 +212,61 @@ public class Stickman extends PhysicsObject implements Thinker{
     public void draw(Graphics g) {
         g.setColor(color);
         g.fillRect(x,y,w,h);
+    }
+    
+
+	private boolean onGround;
+    
+    private class ContactListenerInstance implements ContactListener<Body> {
+
+		@Override
+		public void begin(ContactCollisionData<Body> collision, Contact contact) {
+			// TODO Auto-generated method stub
+			
+			if (collision.getBody1() == body || collision.getBody2() == body) {
+				onGround = true;
+			}
+			
+			
+		}
+
+		@Override
+		public void persist(ContactCollisionData<Body> collision, Contact oldContact, Contact newContact) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void end(ContactCollisionData<Body> collision, Contact contact) {
+			// TODO Auto-generated method stub
+			if (collision.getBody1() == body || collision.getBody2() == body) {
+				onGround = false;
+			}
+		}
+
+		@Override
+		public void destroyed(ContactCollisionData<Body> collision, Contact contact) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void collision(ContactCollisionData<Body> collision) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void preSolve(ContactCollisionData<Body> collision, Contact contact) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void postSolve(ContactCollisionData<Body> collision, SolvedContact contact) {
+			// TODO Auto-generated method stub
+			
+		}
+    	
     }
 }

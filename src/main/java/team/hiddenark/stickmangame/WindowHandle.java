@@ -8,21 +8,16 @@ import com.sun.jna.platform.win32.WinUser;
 
 import java.awt.*;
 import java.lang.reflect.Field;
-//import java.lang.reflect.Field;
 import org.dyn4j.collision.Filter;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
-import sun.awt.windows.WComponentPeer;
 
 
 public class WindowHandle extends PhysicsObject{
 
     private HWND window;
-
-    private BodyFixture fixture;
-    private org.dyn4j.geometry.Rectangle  rect;
 
     private Rectangle lastBound;
 
@@ -39,19 +34,29 @@ public class WindowHandle extends PhysicsObject{
 
         this.gameWindow = gameWindow;
 
-        Rectangle bounds = getBounds();
-        lastBound = bounds;
-        rect = new org.dyn4j.geometry.Rectangle(gameWindow.toPUnits(bounds.width),gameWindow.toPUnits(bounds.height));
-
-        fixture = new BodyFixture(rect);
-
+       
+                                                                                        
         this.body = new Body();
-        body.addFixture(fixture);
+        
+        body.addFixture(makeFixture());
         body.setMass(MassType.FIXED_ANGULAR_VELOCITY);
+        Rectangle bounds = getBounds();
         body.translate(gameWindow.toVector2((int)bounds.getCenterX(),(int)bounds.getCenterY()));
         body.setAtRestDetectionEnabled(false);
+        
+        this.disableBody();
 
 
+    }
+    
+    private BodyFixture makeFixture() {
+    	 Rectangle bounds = getBounds();
+         lastBound = bounds;
+         org.dyn4j.geometry.Rectangle rect = new org.dyn4j.geometry.Rectangle(gameWindow.toPUnits(bounds.width),gameWindow.toPUnits(bounds.height));
+         
+         BodyFixture fixture = new BodyFixture(rect);
+         fixture.setDensity(0.01);
+         return fixture;
     }
 
     @Override
@@ -62,8 +67,8 @@ public class WindowHandle extends PhysicsObject{
             return;
         }
 
-        Rectangle bounds = getBounds();
-        g.drawRect(bounds.x,bounds.y, bounds.width, bounds.height);
+//        Rectangle bounds = getBounds();
+//        g.drawRect(bounds.x,bounds.y, bounds.width, bounds.height);
     }
 
     @Override
@@ -76,10 +81,12 @@ public class WindowHandle extends PhysicsObject{
             this.remove();
             return;
         }
-
+        
+        
         Rectangle bounds = getBounds();
         if (lastBound.x == bounds.x && lastBound.y == bounds.y){
             Point p = gameWindow.toGraphicsPoint(body.getWorldCenter());
+            if (enabled)
             User32.INSTANCE.SetWindowPos(window, null, p.x-bounds.width/2, p.y-bounds.height/2 , 0,0, WinUser.SWP_NOSIZE | WinUser.SWP_NOZORDER);
         } else {
             body.getTransform().setTranslation(gameWindow.toVector2((int)bounds.getCenterX(),(int)bounds.getCenterY()));
@@ -90,18 +97,19 @@ public class WindowHandle extends PhysicsObject{
         if (bounds.width != lastBound.width || bounds.height != lastBound.height) {
             // Remove existing fixtures
 
-            gameWindow.physics.removeBody(body);
-
-            rect = new org.dyn4j.geometry.Rectangle(gameWindow.toPUnits(bounds.width),gameWindow.toPUnits(bounds.height));
-
-            fixture = new BodyFixture(rect);
-
-            this.body = new Body();
-            body.addFixture(fixture);
-            body.setMass(MassType.FIXED_ANGULAR_VELOCITY);
-            body.translate(gameWindow.toVector2((int)bounds.getCenterX(),(int)bounds.getCenterY()));
-            body.setAtRestDetectionEnabled(false);
-            gameWindow.physics.addBody(body);
+            
+            
+            this.body.removeAllFixtures();
+            
+            this.body.addFixture(this.makeFixture());
+            
+            body.updateMass();
+            body.getTransform().setTranslation(gameWindow.toVector2((int)bounds.getCenterX(),(int)bounds.getCenterY()));
+            
+            if (!enabled) {
+            	this.disableBody();
+            }
+            
 
             // Ensure the body is part of the world
 
@@ -109,7 +117,8 @@ public class WindowHandle extends PhysicsObject{
         }
 
         bounds = getBounds();
-        lastBound.setLocation(bounds.x,bounds.y);
+        
+        lastBound = bounds;
 
         if (bounds.y>gameWindow.getHeight()+50){
             System.out.println(getTitle() + " bellow " + bounds.y);

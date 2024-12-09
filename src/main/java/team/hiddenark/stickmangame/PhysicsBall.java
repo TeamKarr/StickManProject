@@ -21,6 +21,7 @@ public class PhysicsBall extends PhysicsObject{
         this.body.translate(window.toVector2(x,y));
         this.body.setMass(MassType.NORMAL);
         this.radius = r;
+        this.setDefaultFilter();
         this.setVisible(true);
     }
 
