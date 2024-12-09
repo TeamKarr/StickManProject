@@ -1,8 +1,12 @@
 package team.hiddenark.stickmangame;
 
+import java.util.concurrent.Callable;
+
 public abstract class Goal {
 
     protected Thinker thinker;
+    
+    public boolean runWithNext = false;
 
 
     public static class GoalGen{
@@ -12,6 +16,7 @@ public abstract class Goal {
         public GoalGen(Thinker t){
             this.t = t;
         }
+        
 
         public MoveXGoal createMoveXGoal(int targetX, double maxVelocity, double accelerationRate, double decelerationThreshold, Runnable onComplete){
             return new MoveXGoal(t,targetX, maxVelocity, accelerationRate, decelerationThreshold, onComplete);
@@ -27,6 +32,14 @@ public abstract class Goal {
 
         public WaitGoal createWaitGoal(double length){
             return new WaitGoal(t,length, null);
+        }
+        
+        public WaitForGoal createWaitForGoal(Callable<Boolean> check) {
+        	return new WaitForGoal(t,check, null);
+        }
+        
+        public WaitForGoal createWaitForGoal(Callable<Boolean> check, Runnable onComplete) {
+        	return new WaitForGoal(t,check, onComplete);
         }
     }
 
@@ -61,10 +74,40 @@ public abstract class Goal {
 
         @Override
         public void act() {
-            // waiting;
+            // start the timer on first call;
             if (start == -1){
                 start = System.nanoTime();
             }
+        }
+    }
+    
+    public static class WaitForGoal extends Goal{
+        private long start;
+		private Callable<Boolean> check;
+
+        public WaitForGoal(Thinker thinker, Callable<Boolean> check, Runnable onComplete) {
+            this.thinker = thinker;
+            this.check = check;
+            this.start = -1;
+
+            this.onComplete = onComplete;
+        }
+
+        @Override
+        public boolean isGoalCompleted() {
+        	try {
+				return check.call();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return false;
+            
+        }
+
+        @Override
+        public void act() {
+          
         }
     }
 

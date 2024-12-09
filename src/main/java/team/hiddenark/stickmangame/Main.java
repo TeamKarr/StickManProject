@@ -61,7 +61,9 @@ public class Main extends GameWindow {
         man = new Stickman(this,this.getWidth()-50,this.getHeight()-800,80, Color.GREEN);
 
         this.addObject(man);
-        System.out.println(man)                                                                              ;
+        System.out.println(man);
+        
+        
 //        man.addGoal((new Goal.GoalGen(man)).createMoveXGoal(this.getWidth()/2, 5, 0.5, 20));
 //        man.addGoal((new Goal.GoalGen(man)).createWaitGoal(5000));
 //        man.addGoal((new Goal.GoalGen(man)).createMoveXGoal(this.getWidth(), 5, 0.5, 20));
@@ -85,8 +87,9 @@ public class Main extends GameWindow {
         } else if (keysPressed.contains(NativeKeyEvent.VC_RIGHT)){
             System.out.println("right");
             man.moveSide(4,0.5);
-        } else {
-//            man.moveSide(0,0.5);
+        } 
+        if (keysPressed.contains(NativeKeyEvent.VC_UP)){
+            man.tryJump(2);
         }
 //
 //        System.out.println(this.getBottomBarHeight());
@@ -104,6 +107,16 @@ public class Main extends GameWindow {
 
                 this.addObject(ball);
                 break;
+            case NativeKeyEvent.VC_1:
+            	man.createPushWindowGoals(windows.getFirst(), 1);
+            	man.addGoal(man.goalGen.createMoveXGoal(getWidth()/2, 5, 0.5, 20));
+            	break;
+            case NativeKeyEvent.VC_OPEN_BRACKET:
+            	windows.forEach((w) -> w.enableBody());
+            	break;
+            case NativeKeyEvent.VC_CLOSE_BRACKET:
+            	windows.forEach((w) -> w.disableBody());
+            	break;
         }
 
     }
