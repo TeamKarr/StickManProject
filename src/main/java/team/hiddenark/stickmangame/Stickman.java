@@ -9,14 +9,12 @@ import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Vector2;
 import org.dyn4j.world.ContactCollisionData;
 import org.dyn4j.world.listener.ContactListener;
-
-import team.hiddenark.stickmangame.Goal.GoalGen;
+import team.hiddenark.stickmangame.brain.*;
+import team.hiddenark.stickmangame.window.WindowHandle;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Queue;
 
-public class Stickman extends PhysicsObject implements Thinker{
+public class Stickman extends PhysicsObject implements Thinker {
 
     private int x,y,w,h;
 
@@ -24,9 +22,11 @@ public class Stickman extends PhysicsObject implements Thinker{
 
     private Color color;
 
-    private ArrayList<Goal> goals = new ArrayList<Goal>();
+//    private ArrayList<Goal> goals = new ArrayList<Goal>();
     
     public GoalGen goalGen = new GoalGen(this);
+
+    public GoalQue goals = new GoalQue();
 
     public Stickman(GameWindow window, int x, int y, int s, Color color){
         this.x = x;
@@ -68,26 +68,7 @@ public class Stickman extends PhysicsObject implements Thinker{
         this.x = p.x-this.w/2;
         this.y = p.y-this.h/2;
 
-        if (!goals.isEmpty()){
-        	
-        	boolean runNext;
-        	do {
-        		Goal currentGoal = goals.get(0);
-                
-        		runNext = currentGoal.runWithNext;
-                
-                if (currentGoal.isGoalCompleted()){
-                    currentGoal.onComplete();
-                    goals.remove(0);
-                } else {
-                    currentGoal.act();
-                }
-        	} while (runNext);
-            
-        }
-
-
-
+        goals.act();
     }
 
     // Actions
@@ -105,7 +86,7 @@ public class Stickman extends PhysicsObject implements Thinker{
     public void moveSide(double targetVelocity, double accelerationRate) {
 //    	if (!onGround) return;
 
-        System.out.println(targetVelocity);
+//        System.out.println(targetVelocity);
         // Get the current velocity of the object
         Vector2 currentVelocity = this.body.getLinearVelocity();
 
@@ -138,21 +119,14 @@ public class Stickman extends PhysicsObject implements Thinker{
     				-runThroughDistance);
     	
     	 addGoal(goalGen.createMoveXGoal(startX, 5, 0.5, 20, () -> {
+    	     System.out.println("Enabling: " + wndh.getTitle());
     		 wndh.enableBody();
     	 }));
     	 addGoal(goalGen.createMoveXGoal(endX, 5, 0.5, 20));
     	
     	
     	
-    	// mobe to side
-    	// drop window
-    	// wait for
-    	// 
-    	// move to side of window
-    	// 
-    	
-    	
-//    	wndh.enableBody();
+
     	
     }
     

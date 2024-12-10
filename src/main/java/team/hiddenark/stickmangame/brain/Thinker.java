@@ -1,4 +1,4 @@
-package team.hiddenark.stickmangame;
+package team.hiddenark.stickmangame.brain;
 
 public interface Thinker {
     int getX();

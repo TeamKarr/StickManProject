@@ -3,14 +3,14 @@ package team.hiddenark.stickmangame;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
-import com.sun.jna.Pointer;
 import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
-import com.sun.jna.platform.win32.WinUser;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.geometry.Vector2;
 import org.dyn4j.world.World;
+import team.hiddenark.stickmangame.window.WindowHandle;
+import team.hiddenark.stickmangame.window.WindowHandleList;
 
 import javax.swing.JFrame;
 import javax.swing.JComponent;
@@ -26,12 +26,13 @@ public class GameWindow extends JFrame implements NativeKeyListener {
     protected ArrayList<GameObject> objects = new ArrayList<GameObject>();
     protected ArrayList<GameObject> pendingObjects = new ArrayList<GameObject>();
     protected ArrayList<Body> pendingBody = new ArrayList<Body>();
-    protected ArrayList<WindowHandle> windows = new ArrayList<WindowHandle>();
+    protected WindowHandleList windows = new WindowHandleList(this);
 
     World<Body> physics = new World<Body>();
     private boolean running = false; // Control for the game loop
 
     private WinDef.HWND mainWindow;
+    private boolean reAddOpenWindows;
 
     public GameWindow(String title) {
         super(title);
@@ -82,31 +83,31 @@ public class GameWindow extends JFrame implements NativeKeyListener {
 
     }
 
-    public void manageWindows(){
-//        WindowHandleGetter getter = new WindowHandleGetter(this);
-//        mainWindow = getter.getWindowId();
+//    public void manageWindows(){
+////        WindowHandleGetter getter = new WindowHandleGetter(this);
+////        mainWindow = getter.getWindowId();
+////
+////        if (this instanceof Component){
+////            System.out.println("Component");
+////        }
 //
-//        if (this instanceof Component){
-//            System.out.println("Component");
-//        }
-
-        User32.INSTANCE.EnumWindows((hWnd, data) -> {
-            if (User32.INSTANCE.IsWindow(hWnd) && User32.INSTANCE.IsWindowVisible(hWnd)) {
-
+//        User32.INSTANCE.EnumWindows((hWnd, data) -> {
+//            if (User32.INSTANCE.IsWindow(hWnd) && User32.INSTANCE.IsWindowVisible(hWnd)) {
 //
-                String title = WindowUtils.getWindowTitle(hWnd);
-                if (!title.isEmpty() && !title.contains("Windows Input Experience") && !title.contains("Program Manager")){
-                    WindowHandle window = new WindowHandle(this,hWnd);
-                    System.out.println(window.getTitle());
-                    this.windows.add(window);
-                    this.addObject(window);
-                }
-
-            }
-            return true; // Continue enumeration
-        }, null);
-        System.out.println(windows.size());
-    }
+////
+//                String title = WindowUtils.getWindowTitle(hWnd);
+//                if (!title.isEmpty() && !title.contains("Windows Input Experience") && !title.contains("Program Manager")){
+//                    WindowHandle window = new WindowHandle(this,hWnd);
+//                    System.out.println(window.getTitle());
+//                    this.windows.add(window);
+//                    this.addObject(window);
+//                }
+//
+//            }
+//            return true; // Continue enumeration
+//        }, null);
+//        System.out.println(windows.size());
+//    }
 
 
     public int getBottomBarHeight(){
@@ -135,6 +136,11 @@ public class GameWindow extends JFrame implements NativeKeyListener {
                     physics.removeBody(((PhysicsObject) o).body);
             }
         });
+
+        if(reAddOpenWindows){
+            windows.addOpenWindows(false);
+            reAddOpenWindows = false;
+        }
 
         windows.removeIf(GameObject::isMarkedForRemoval);
         objects.removeIf(GameObject::isMarkedForRemoval);
@@ -186,7 +192,8 @@ public class GameWindow extends JFrame implements NativeKeyListener {
 
 
 
-        manageWindows();
+        windows.addOpenWindows(false);
+        windows.listenForNewWindows();
         setVisible(true);
         mainWindow = User32.INSTANCE.GetForegroundWindow();
 
@@ -201,8 +208,7 @@ public class GameWindow extends JFrame implements NativeKeyListener {
         gameLoop.start();
     }
 
-    public void reAddPhysics(Body body) {
-        this.physics.removeBody(body);
-        this.physics.addBody(body);
+    public void runAddAll() {
+        reAddOpenWindows = true;
     }
 }

@@ -1,9 +1,10 @@
-package team.hiddenark.stickmangame;
+package team.hiddenark.stickmangame.window;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef.HWND;  
+import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinUser;
 
 import java.awt.*;
@@ -13,9 +14,11 @@ import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
+import team.hiddenark.stickmangame.GameWindow;
+import team.hiddenark.stickmangame.PhysicsObject;
 
 
-public class WindowHandle extends PhysicsObject{
+public class WindowHandle extends PhysicsObject {
 
     private HWND window;
 
@@ -61,14 +64,14 @@ public class WindowHandle extends PhysicsObject{
 
     @Override
     public void draw(Graphics g){
-        g.setColor(Color.RED);
+        g.setColor(enabled? Color.GREEN : Color.RED);
 
         if (!User32.INSTANCE.IsWindow(window)){
             return;
         }
 
-//        Rectangle bounds = getBounds();
-//        g.drawRect(bounds.x,bounds.y, bounds.width, bounds.height);
+        Rectangle bounds = getBounds();
+        g.drawRect(bounds.x,bounds.y, bounds.width, bounds.height);
     }
 
     @Override
@@ -142,7 +145,21 @@ public class WindowHandle extends PhysicsObject{
         return WindowUtils.getWindowTitle(window);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof WindowHandle){
+            return ((WindowHandle) obj).window == this.window;
+        }
+        return false;
+    }
 
+    public static boolean isVisible(WinDef.HWND window){
+        return User32.INSTANCE.IsWindowVisible(window);
+    }
+
+    public static boolean isWindow(WinDef.HWND window){
+        return User32.INSTANCE.IsWindow(window);
+    }
 
 
 }

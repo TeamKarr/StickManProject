@@ -82,10 +82,8 @@ public class Main extends GameWindow {
         super.gameLoop(deltaTime);
 
         if (keysPressed.contains(NativeKeyEvent.VC_LEFT)) {
-            System.out.println("left");
             man.moveSide(-4, 0.5);
         } else if (keysPressed.contains(NativeKeyEvent.VC_RIGHT)){
-            System.out.println("right");
             man.moveSide(4,0.5);
         } 
         if (keysPressed.contains(NativeKeyEvent.VC_UP)){
@@ -100,23 +98,18 @@ public class Main extends GameWindow {
 
         keysPressed.add(e.getKeyCode());
 
-        switch (e.getKeyCode()){
-            case NativeKeyEvent.VC_SPACE:
+        switch (e.getKeyCode()) {
+            case NativeKeyEvent.VC_SPACE -> {
                 Point p = MouseInfo.getPointerInfo().getLocation();
-                PhysicsBall ball = new PhysicsBall(this,p.x,p.y,20);
-
+                PhysicsBall ball = new PhysicsBall(this, p.x, p.y, 20);
                 this.addObject(ball);
-                break;
-            case NativeKeyEvent.VC_1:
-            	man.createPushWindowGoals(windows.getFirst(), 1);
-            	man.addGoal(man.goalGen.createMoveXGoal(getWidth()/2, 5, 0.5, 20));
-            	break;
-            case NativeKeyEvent.VC_OPEN_BRACKET:
-            	windows.forEach((w) -> w.enableBody());
-            	break;
-            case NativeKeyEvent.VC_CLOSE_BRACKET:
-            	windows.forEach((w) -> w.disableBody());
-            	break;
+            }
+            case NativeKeyEvent.VC_1 -> {
+                man.createPushWindowGoals(windows.get(0), 1);
+                man.addGoal(man.goalGen.createMoveXGoal(getWidth() / 2, 5, 0.5, 20));
+            }
+            case NativeKeyEvent.VC_OPEN_BRACKET -> windows.forEach(PhysicsObject::enableBody);
+            case NativeKeyEvent.VC_CLOSE_BRACKET -> windows.forEach(PhysicsObject::disableBody);
         }
 
     }

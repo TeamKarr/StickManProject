@@ -5,16 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5d81f45e-a69d-4e39-94ea-c70e68671c6c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/Goal.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/Stickman.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/Thinker.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/brain/Goal.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/brain/GoalGen.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/brain/GoalQue.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/brain/Thinker.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/window/WindowHandleList.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/GameWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/GameWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/Goal.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/PhysicsObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/PhysicsObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/WindowHandle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/WindowHandle.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/mac/JNAUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/mac/JNAUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/Stickman.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/Stickman.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/Thinker.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/WindowHandle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/window/WindowHandle.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,6 +50,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
@@ -67,7 +71,7 @@
       <option name="VM_PARAMETERS" value="--add-exports=java.desktop/sun.awt=ALL-UNNAMED " />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="team.hiddenark.stickmangame.*" />
+          <option name="PATTERN" value="team.hiddenark.stickmangame.window.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
