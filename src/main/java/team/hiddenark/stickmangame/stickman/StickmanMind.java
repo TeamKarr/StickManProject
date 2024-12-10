@@ -1,4 +1,4 @@
-package team.hiddenark.stickmangame;
+package team.hiddenark.stickmangame.stickman;
 
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.BodyFixture;
@@ -9,17 +9,20 @@ import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Vector2;
 import org.dyn4j.world.ContactCollisionData;
 import org.dyn4j.world.listener.ContactListener;
+
+import team.hiddenark.stickmangame.GameWindow;
+import team.hiddenark.stickmangame.PhysicsObject;
 import team.hiddenark.stickmangame.brain.*;
 import team.hiddenark.stickmangame.window.WindowHandle;
 
 import java.awt.*;
 
-public class Stickman extends PhysicsObject implements Thinker {
+public class StickmanMind extends PhysicsObject implements Thinker {
 
     private int x,y,w,h;
 
     private GameWindow window;
-
+    private	Stickman stickman;
     private Color color;
 
 //    private ArrayList<Goal> goals = new ArrayList<Goal>();
@@ -28,7 +31,7 @@ public class Stickman extends PhysicsObject implements Thinker {
 
     public GoalQue goals = new GoalQue();
 
-    public Stickman(GameWindow window, int x, int y, int s, Color color){
+    public StickmanMind(GameWindow window, int x, int y, int s, Color color){
         this.x = x;
         this.y = y;
         this.w = s;
@@ -57,6 +60,11 @@ public class Stickman extends PhysicsObject implements Thinker {
         this.setDefaultFilter();
 
         this.setVisible(true);
+        
+        stickman = new Stickman(x,y,true);
+        stickman.color = color;
+        
+        
     }
 
     public void addGoal(Goal g){
@@ -184,8 +192,11 @@ public class Stickman extends PhysicsObject implements Thinker {
 
     @Override
     public void draw(Graphics g) {
+    	stickman.draw((Graphics2D)g);
         g.setColor(color);
         g.fillRect(x,y,w,h);
+        
+        
     }
     
 

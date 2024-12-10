@@ -34,10 +34,11 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 import team.hiddenark.stickmangame.mac.JNAUtil;
 import team.hiddenark.stickmangame.mac.JNAUtil.*;
+import team.hiddenark.stickmangame.stickman.StickmanMind;
 
 public class Main extends GameWindow {
 
-    Stickman man;
+    StickmanMind man;
 
     private final Set<Integer> keysPressed = new HashSet<>();
 
@@ -58,7 +59,7 @@ public class Main extends GameWindow {
         ground.setMass(MassType.INFINITE);
         addPhysics(ground);
 
-        man = new Stickman(this,this.getWidth()-50,this.getHeight()-800,80, Color.GREEN);
+        man = new StickmanMind(this,this.getWidth()/2,this.getHeight()-200,80, Color.GREEN);
 
         this.addObject(man);
         System.out.println(man);
