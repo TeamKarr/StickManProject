@@ -121,10 +121,17 @@ public class GameWindow extends JFrame implements NativeKeyListener {
 
     public void gameLoop(double deltaTime){
 //        System.out.println(deltaTime);
-        objects.addAll(pendingObjects);
-        pendingObjects = new ArrayList<GameObject>();
-        pendingBody.forEach((b) -> this.physics.addBody(b));
-        pendingBody = new ArrayList<Body>();
+    	
+    	synchronized(objects){
+    		while (pendingObjects.size() > 0) {
+    			objects.add(pendingObjects.getFirst());
+    			pendingObjects.removeFirst();
+    		}
+    	}
+    	while (pendingBody.size() > 0) {
+			physics.addBody(pendingBody.getFirst());
+			pendingBody.removeFirst();
+		}
 
         physics.update(deltaTime);
 
