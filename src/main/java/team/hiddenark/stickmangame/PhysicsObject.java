@@ -38,15 +38,18 @@ public class PhysicsObject extends GameObject{
 
     public void disableBody() {
     	
-    	if (!enabled) return;
+//    	if (!enabled) return;
     	
-    	enabled = false;
+
          // Stop motion
         body.setLinearVelocity(Vector2.create(0,0));
         body.setAngularVelocity(0.0);
 
         // Set the body to static to prevent forces from affecting it
-        defaultMass = body.getMass().getType();
+        if (enabled)
+             defaultMass = body.getMass().getType();
+
+//        System.out.println("Disabled " + body.getMass().getType());
         
         body.setMass(MassType.INFINITE);
 
@@ -59,6 +62,8 @@ public class PhysicsObject extends GameObject{
 
         // Optionally, set the body to sleep
         body.setAtRest(true);
+
+        enabled = false;
     }
 
     public void enableBody() {
@@ -68,6 +73,7 @@ public class PhysicsObject extends GameObject{
     	enabled = true;
         // Restore the dynamic behavior
         body.setMass(defaultMass);
+//        System.out.println("Disabled " + defaultMass);
 
         // Allow collisions
         setDefaultFilter();

@@ -10,6 +10,7 @@ import team.hiddenark.stickmangame.GameWindow;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class WindowHandleList extends ArrayList<WindowHandle> {
     private final String[] ignore;
@@ -128,6 +129,37 @@ public class WindowHandleList extends ArrayList<WindowHandle> {
     public void stopListeningForNewWindows(){
         User32.INSTANCE.UnhookWinEvent(hHook);
         thread.interrupt();
+    }
+
+    public boolean isWindowValid(WinDef.HWND hwnd){
+        if (WindowHandle.isWindow(hwnd) && WindowHandle.isVisible(hwnd)) {
+            String title = WindowUtils.getWindowTitle(hwnd);
+            if (!title.isEmpty() && !Arrays.asList(ignore).stream().anyMatch(title::contains)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public WindowHandle getAndAdd(WinDef.HWND hwnd){
+        WindowHandle window = this.get(hwnd);
+        if (window == null){
+            window = new WindowHandle(mainWindow, hwnd);
+            add(window);
+        }
+        return window;
+    }
+
+    public WindowHandle getTop(){
+        AtomicReference<WindowHandle> output = new AtomicReference<>();
+        User32.INSTANCE.EnumWindows((hWnd, data) -> {
+            if (isWindowValid(hWnd)){
+                output.set(getAndAdd(hWnd));
+                return false;
+            }
+            return true;
+        },null);
+        return output.get();
     }
 
 
