@@ -59,7 +59,7 @@ public class Main extends GameWindow {
         ground.setMass(MassType.INFINITE);
         addPhysics(ground);
 
-        man = new StickmanMind(this,this.getWidth()/2,this.getHeight()-200,80, Color.GREEN);
+        man = new StickmanMind(this,this.getWidth()/2,this.getHeight()-200,60, Color.GREEN);
 
         this.addObject(man);
         System.out.println(man);
@@ -106,9 +106,27 @@ public class Main extends GameWindow {
                 this.addObject(ball);
             }
             case NativeKeyEvent.VC_1 -> {
-                man.createPushWindowGoals(windows.get(0), 1);
-                man.addGoal(man.goalGen.createMoveXGoal(getWidth() / 2, 5, 0.5, 20));
+                man.createPushWindowGoals(windows.getTop(), 1, 2, 1);
+                man.addGoal(man.goalGen.createMoveXGoal(getWidth() / 2, 2, 0.5, 20));
             }
+            case NativeKeyEvent.VC_2 -> {
+                man.createPushWindowGoals(windows.getTop(), -1, 2, 1);
+                man.addGoal(man.goalGen.createMoveXGoal(getWidth() / 2, 2, 0.5, 20));
+            }
+            case NativeKeyEvent.VC_3 -> {
+                windows.getTop().sendToBack();
+            }
+            case NativeKeyEvent.VC_0 -> {
+                if (man.waiting){
+                    man.goals.remove(0);
+                    man.waiting = false;
+                } else {
+                    man.goals.add(0,man.goalGen.createWaitForGoal(()->false));
+                    man.waiting = true;
+                }
+
+            }
+            case NativeKeyEvent.VC_DELETE -> man.goals.clear();
             case NativeKeyEvent.VC_OPEN_BRACKET -> windows.forEach(PhysicsObject::enableBody);
             case NativeKeyEvent.VC_CLOSE_BRACKET -> windows.forEach(PhysicsObject::disableBody);
         }

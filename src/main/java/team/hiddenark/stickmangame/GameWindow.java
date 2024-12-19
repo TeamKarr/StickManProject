@@ -28,6 +28,10 @@ public class GameWindow extends JFrame implements NativeKeyListener {
     protected ArrayList<Body> pendingBody = new ArrayList<Body>();
     protected WindowHandleList windows = new WindowHandleList(this);
 
+    public WindowHandleList getWindowHandleList() {
+        return windows;
+    }
+
     public World<Body> physics = new World<Body>();
     private boolean running = false; // Control for the game loop
 
@@ -124,13 +128,13 @@ public class GameWindow extends JFrame implements NativeKeyListener {
     	
     	synchronized(objects){
     		while (pendingObjects.size() > 0) {
-    			objects.add(pendingObjects.getFirst());
-    			pendingObjects.removeFirst();
+    			objects.add(pendingObjects.get(0));
+    			pendingObjects.remove(0);
     		}
     	}
     	while (pendingBody.size() > 0) {
-			physics.addBody(pendingBody.getFirst());
-			pendingBody.removeFirst();
+			physics.addBody(pendingBody.get(0));
+			pendingBody.remove(0);
 		}
 
         physics.update(deltaTime);
