@@ -18,8 +18,9 @@ public class GoalQue extends LinkedList<Goal> implements Goal{
     }
 
     @Override
-    public void act() {
+    public boolean act() {
         if (!isEmpty()){
+            boolean didRun = false;
             boolean runNext;
             do {
                 Goal currentGoal = peek();
@@ -31,11 +32,14 @@ public class GoalQue extends LinkedList<Goal> implements Goal{
                     currentGoal.onComplete();
                     poll();
                 } else {
-//                    System.out.println("acting out: " + currentGoal);
-                    currentGoal.act();
+                    System.out.println("acting out: " + currentGoal);
+                    if (currentGoal.act())
+                        didRun = true;
                 }
             } while (runNext);
+            return didRun;
         }
+        return false;
     }
 
     @Override

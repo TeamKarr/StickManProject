@@ -76,11 +76,13 @@ public class GoalGen {
         }
 
         @Override
-        public void act() {
+        public boolean act() {
             // start the timer on first call;
             if (start == -1){
                 start = System.nanoTime();
             }
+
+            return false;
         }
 
         @Override
@@ -112,7 +114,7 @@ public class GoalGen {
         }
 
         @Override
-        public void act() {}
+        public boolean act() {return false;}
 
         @Override
         public String toString() {
@@ -126,7 +128,7 @@ public class GoalGen {
         private final double maxVelocity; // Maximum velocity
         private final double accelerationRate; // Acceleration per tick
         private final double decelerationThreshold; // Distance to start decelerating
-        public int tolerance = 10;
+        public int tolerance = 50;
 
         public MoveXGoal(int targetX, double maxVelocity, double accelerationRate, double decelerationThreshold, Runnable onCompleteTask){
             super(onCompleteTask);
@@ -142,7 +144,7 @@ public class GoalGen {
             return (Math.abs(targetX-thinker.getX())<tolerance);
         }
 
-        public void act() {
+        public boolean act() {
             // Get the current position of the thinker
             int currentX = thinker.getX();
 
@@ -161,11 +163,13 @@ public class GoalGen {
 
             // Call the thinker’s moveSide method with calculated velocity
             thinker.moveSide(targetVelocity, accelerationRate);
+
+            return true;
         }
 
         @Override
         public String toString() {
-            return "traveling to x="+targetX;
+            return "x = " + thinker.getX() + " traveling to "+targetX;
         }
 
     }

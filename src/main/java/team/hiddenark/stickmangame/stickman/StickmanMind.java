@@ -11,11 +11,13 @@ import org.dyn4j.world.ContactCollisionData;
 import org.dyn4j.world.listener.ContactListener;
 
 import team.hiddenark.stickmangame.GameWindow;
+import team.hiddenark.stickmangame.Main;
 import team.hiddenark.stickmangame.PhysicsObject;
 import team.hiddenark.stickmangame.brain.*;
 import team.hiddenark.stickmangame.window.WindowHandle;
 
 import java.awt.*;
+import java.util.Random;
 
 public class StickmanMind extends PhysicsObject implements Thinker {
 
@@ -30,6 +32,8 @@ public class StickmanMind extends PhysicsObject implements Thinker {
     public GoalGen goalGen = new GoalGen(this);
 
     public GoalQue goals = new GoalQue();
+
+    private Random random;
 
     public StickmanMind(GameWindow window, int x, int y, int s, Color color, boolean smallHead){
         this.x = x;
@@ -64,7 +68,7 @@ public class StickmanMind extends PhysicsObject implements Thinker {
         stickman = new Stickman(x,y,smallHead);
         stickman.color = color;
         
-        
+        random = new Random();
     }
 
     public void addGoal(Goal g){
@@ -77,6 +81,12 @@ public class StickmanMind extends PhysicsObject implements Thinker {
     	return 0;
     }
 
+    private double boredom = 0;
+    private double anger = 0;
+    private double curiosity = 0;
+
+
+
     public void tick(double deltaTime){
         Point p = window.toGraphicsPoint(body.getWorldCenter());
         this.x = p.x-this.w/2;
@@ -86,28 +96,108 @@ public class StickmanMind extends PhysicsObject implements Thinker {
         System.out.println((stickman.pushing?(stickman.pushReach/2-5)*stickman.getDirection():0));
         stickman.setX(getX()+w/2+(stickman.pushing?(stickman.pushReach/2-5)*stickman.getDirection():0));
         stickman.setY(y+h);
-        goals.act();
+//        goals.act();
+
+
+        if (goals.isEmpty()){
+            if (boredom > 50 && random.nextInt(10) > 8){
+                createPushWindowGoals(window.getWindowHandleList().getTop(), 1, 2, random.nextInt(2)==1?1:-1);
+            } else if (boredom > 10 && random.nextInt(20) > 8){
+                this.addGoal(wanderTo(random.nextInt(window.getWidth()),random.nextDouble(0.5,2)));
+            }
+
+        }
+
+
+
+        if(goals.act()){
+            boredom += 0.05;
+        } else {
+            boredom += 0.2;
+        }
+
+        boredom = clamp(boredom, 0.0, 100.0);
     }
-    
+
+    public static double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    private Goal wanderTo(int x, double speed){
+        return this.goalGen.createMoveXGoal(x,speed, 0.5, 20,() -> {
+            boredom -= random.nextDouble(1,10);
+        });
+    }
+
     @Override
     public void draw(Graphics g) {
-    	
-//    	stickman.setX(x+w/2);
-    	
-    	//System.out.print(onGround);
-    	
-    	
-    	stickman.pushReach = (int)(this.w*0.6);
+//        stickman.draw((Graphics2D)g);
+//        g.setColor(color);
+//        g.fillRect(x,y,w,h);
+        
+        
+        stickman.pushReach = (int)(this.w*0.6);
     	stickman.draw((Graphics2D)g);
-    	
-//        ((Graphics2D) g).setStroke(new BasicStroke(2));
-//    	
-//    	g.setColor(color);
-//        g.drawRect(x,y,w,h);
-//        
-        
-        
+
+        // Antialiasing for smoother text/graphics
+        Graphics2D g2d = (Graphics2D) g.create();
+        g2d.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON
+        );
+
+        int width = window.getWidth();
+
+        // Draw boredom bar
+        drawBar(g2d, "Boredom", boredom, boredomColor,
+                PANEL_PADDING, PANEL_PADDING, width - 2 * PANEL_PADDING);
+
+        // Draw anger bar
+        int angerY = PANEL_PADDING + BAR_HEIGHT + BAR_SPACING;
+        drawBar(g2d, "Anger", anger, angerColor,
+                PANEL_PADDING, angerY, width - 2 * PANEL_PADDING);
+
+        // Draw curiosity bar
+        int curiosityY = angerY + BAR_HEIGHT + BAR_SPACING;
+        drawBar(g2d, "Curiosity", curiosity, curiosityColor,
+                PANEL_PADDING, curiosityY, width - 2 * PANEL_PADDING);
+
+
     }
+
+    private final Color boredomColor = new Color(0, 0, 255); // Blue
+    private final Color angerColor = new Color(255, 0, 0);   // Red
+    private final Color curiosityColor = new Color(0, 200, 0); // Green
+
+    private static final int BAR_HEIGHT = 30;
+    private static final int BAR_SPACING = 20;
+    private static final int TEXT_SPACING = 10;
+    private static final int PANEL_PADDING = 20;
+    private static final int MAX_VALUE = 100;
+
+    private void drawBar(Graphics2D g2d, String label, double value, Color barColor,
+                         int x, int y, int maxWidth) {
+        // Draw the label
+        g2d.setColor(Color.BLACK);
+        g2d.drawString(label + ": " + (int) value, x, y - TEXT_SPACING);
+
+        // Calculate bar width based on value
+        int filledWidth = (int) ((value / MAX_VALUE) * maxWidth);
+
+        // Draw the background bar (light gray)
+        g2d.setColor(Color.LIGHT_GRAY);
+        g2d.fillRect(x, y, maxWidth, BAR_HEIGHT);
+
+        // Draw the filled portion of the bar
+        g2d.setColor(barColor);
+        g2d.fillRect(x, y, filledWidth, BAR_HEIGHT);
+
+        // Draw outline
+        g2d.setColor(Color.BLACK);
+        g2d.drawRect(x, y, maxWidth, BAR_HEIGHT);
+    }
+    
+    
 
     // Actions
 
@@ -158,21 +248,27 @@ public class StickmanMind extends PhysicsObject implements Thinker {
     	int endX = (direction > 0? 
     			window.getWidth()+runThroughDistance:
     				-runThroughDistance);
-    	
-    	 addGoal(goalGen.createMoveXGoal(startX, speed, 0.5, 20, () -> {
-    	     System.out.println("Enabling: " + wndh.getTitle());
-    	     stickman.pushing = true;
-    		 wndh.enableBody();
-    	 }));
-    	 addGoal(goalGen.createMoveXGoal(endX, pushSpeed, 0.5, 20, () -> {
-    		 stickman.pushing = false;
-    	 }));
+
+        //    	     System.out.println("Enabling: " + wndh.getTitle());
+        addGoal(goalGen.createMoveXGoal(startX, speed, 0.5, 20, () -> {
+            wndh.enableBody();
+            stickman.pushing = true;
+            boredom-=25;
+        }));
+        addGoal(goalGen.createMoveXGoal(endX, pushSpeed, 0.5, 20, ()->{
+            wndh.disableBody();
+            wndh.sendToBack();
+            stickman.pushing = false;
+            boredom-=75;
+        }));
     	
     	
     	
 
     	
     }
+
+    public boolean waiting = false;
     
     public void tryJump(double strength) {
     	if(onGround) {
@@ -222,8 +318,6 @@ public class StickmanMind extends PhysicsObject implements Thinker {
         // Update the body's velocity
         this.body.setLinearVelocity(new Vector2(newVelocityX, this.body.getLinearVelocity().y));
     }
-
-   
     
 
 	private boolean onGround;

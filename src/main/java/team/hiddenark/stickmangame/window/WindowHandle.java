@@ -27,6 +27,7 @@ public class WindowHandle extends PhysicsObject {
     private GameWindow gameWindow;
 
     private boolean minimized;
+    private boolean drawDebug = false;
 
 //    private Body body;
 
@@ -48,7 +49,6 @@ public class WindowHandle extends PhysicsObject {
         body.setAtRestDetectionEnabled(false);
         
         this.disableBody();
-
 
     }
     
@@ -72,9 +72,11 @@ public class WindowHandle extends PhysicsObject {
             return;
         }
 
-//        ((Graphics2D) g).setStroke(new BasicStroke(2));
-//        Rectangle bounds = getBounds();
-//        g.drawRect(bounds.x,bounds.y, bounds.width, bounds.height);
+        if (drawDebug){
+            Rectangle bounds = getBounds();
+            g.drawRect(bounds.x,bounds.y, bounds.width, bounds.height);
+        }
+
     }
 
     @Override
@@ -130,15 +132,24 @@ public class WindowHandle extends PhysicsObject {
 
     }
 
+    public void sendToBack(){
+        HWND HWND_BOTTOM = new HWND(Pointer.createConstant(1));
+        int SWP_NOSIZE = 0x0001;
+        int SWP_NOMOVE = 0x0002;
+        int SWP_NOACTIVATE = 0x0010;
+        User32.INSTANCE.SetWindowPos(getHWND(),  HWND_BOTTOM, 0, 0, 0, 0,
+                SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
+    }
+
     public HWND getHWND(){
         return window;
     }
 
     public Rectangle getBounds(){
         Rectangle bounds = WindowUtils.getWindowLocationAndSize(window);
-        bounds.width-=10;
-        bounds.x+=5;
-        bounds.height-=5;
+        bounds.width -= 14;
+        bounds.height -= 7;
+        bounds.x += 7;
         return bounds;
 
     }
