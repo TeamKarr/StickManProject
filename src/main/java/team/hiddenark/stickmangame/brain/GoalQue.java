@@ -31,7 +31,7 @@ public class GoalQue extends LinkedList<Goal> implements Goal{
                     currentGoal.onComplete();
                     poll();
                 } else {
-                    System.out.println("acting out: " + currentGoal);
+//                    System.out.println("acting out: " + currentGoal);
                     currentGoal.act();
                 }
             } while (runNext);

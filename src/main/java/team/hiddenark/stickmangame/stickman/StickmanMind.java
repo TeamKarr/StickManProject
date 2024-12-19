@@ -31,7 +31,7 @@ public class StickmanMind extends PhysicsObject implements Thinker {
 
     public GoalQue goals = new GoalQue();
 
-    public StickmanMind(GameWindow window, int x, int y, int s, Color color){
+    public StickmanMind(GameWindow window, int x, int y, int s, Color color, boolean smallHead){
         this.x = x;
         this.y = y;
         this.w = s;
@@ -50,7 +50,7 @@ public class StickmanMind extends PhysicsObject implements Thinker {
         b.addFixture(f);
         b.translate(window.toVector2(x,y));
         b.setAtRestDetectionEnabled(false);
-        b.setLinearDamping(2);
+        b.setLinearDamping(01);
 
         b.setMass(MassType.FIXED_ANGULAR_VELOCITY);
         this.body = b;
@@ -61,7 +61,7 @@ public class StickmanMind extends PhysicsObject implements Thinker {
 
         this.setVisible(true);
         
-        stickman = new Stickman(x,y,true);
+        stickman = new Stickman(x,y,smallHead);
         stickman.color = color;
         
         
@@ -70,13 +70,43 @@ public class StickmanMind extends PhysicsObject implements Thinker {
     public void addGoal(Goal g){
         this.goals.add(g);
     }
+    
+    private int sign(double a) {
+    	if (a > 0) return 1;
+    	if (a < 0) return -1;
+    	return 0;
+    }
 
     public void tick(double deltaTime){
         Point p = window.toGraphicsPoint(body.getWorldCenter());
         this.x = p.x-this.w/2;
         this.y = p.y-this.h/2;
-
+        stickman.velocityX = window.toGUnits(body.getLinearVelocity().x)/75;
+//        stickman.velocityX = sign(stickman.velocityX)*Math.log(Math.abs(stickman.velocityX));
+        System.out.println((stickman.pushing?(stickman.pushReach/2-5)*stickman.getDirection():0));
+        stickman.setX(getX()+w/2+(stickman.pushing?(stickman.pushReach/2-5)*stickman.getDirection():0));
+        stickman.setY(y+h);
         goals.act();
+    }
+    
+    @Override
+    public void draw(Graphics g) {
+    	
+//    	stickman.setX(x+w/2);
+    	
+    	//System.out.print(onGround);
+    	
+    	
+    	stickman.pushReach = (int)(this.w*0.6);
+    	stickman.draw((Graphics2D)g);
+    	
+//        ((Graphics2D) g).setStroke(new BasicStroke(2));
+//    	
+//    	g.setColor(color);
+//        g.drawRect(x,y,w,h);
+//        
+        
+        
     }
 
     // Actions
@@ -109,13 +139,16 @@ public class StickmanMind extends PhysicsObject implements Thinker {
 
         // Update the horizontal velocity
         double newVelocityX = currentVelocityX + acceleration;
+        
+       
+//        System.out.println(window.toGUnits(newVelocityX));
 
         // Set the new velocity, keeping the vertical velocity unchanged
         this.body.setLinearVelocity(new Vector2(newVelocityX, currentVelocity.y));
 //        System.out.println(new Vector2(newVelocityX, currentVelocity.y));
     }
     
-    public void createPushWindowGoals(WindowHandle wndh, int direction) {
+    public void createPushWindowGoals(WindowHandle wndh, int direction, double speed, double pushSpeed) {
     	java.awt.Rectangle bounds = wndh.getBounds();
     	int runUpDistance = 200;
     	int runThroughDistance = 100;
@@ -126,11 +159,14 @@ public class StickmanMind extends PhysicsObject implements Thinker {
     			window.getWidth()+runThroughDistance:
     				-runThroughDistance);
     	
-    	 addGoal(goalGen.createMoveXGoal(startX, 5, 0.5, 20, () -> {
+    	 addGoal(goalGen.createMoveXGoal(startX, speed, 0.5, 20, () -> {
     	     System.out.println("Enabling: " + wndh.getTitle());
+    	     stickman.pushing = true;
     		 wndh.enableBody();
     	 }));
-    	 addGoal(goalGen.createMoveXGoal(endX, 5, 0.5, 20));
+    	 addGoal(goalGen.createMoveXGoal(endX, pushSpeed, 0.5, 20, () -> {
+    		 stickman.pushing = false;
+    	 }));
     	
     	
     	
@@ -187,17 +223,7 @@ public class StickmanMind extends PhysicsObject implements Thinker {
         this.body.setLinearVelocity(new Vector2(newVelocityX, this.body.getLinearVelocity().y));
     }
 
-
-
-
-    @Override
-    public void draw(Graphics g) {
-    	stickman.draw((Graphics2D)g);
-        g.setColor(color);
-        g.fillRect(x,y,w,h);
-        
-        
-    }
+   
     
 
 	private boolean onGround;

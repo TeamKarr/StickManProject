@@ -69,11 +69,12 @@ public class Stickman {
 	public double maxSpeed = 5;
 	private int tick;
 	public boolean action=false;
-	private double targetVelocity = 1;
+	private double targetVelocity = 0;
 	private GaitCycle moveAnimation = new GaitCycle("run/walk",velocityX, (int)Math.signum(velocityX), this);
 	public double velocityY=0;
 	private Direction dir;
-	public Toggle pushing = new Toggle();
+	public boolean pushing = false;
+	public int pushReach = 40;
 	
 	public int getDirection(){
 		return dir==Direction.RIGHT?1:-1;
@@ -81,11 +82,11 @@ public class Stickman {
 	public void draw(Graphics2D window) {
 		
 		moveAnimation.velocity = velocityX;
-		velocityX = Helper.incrementTowards(velocityX, targetVelocity,0.2);
+		
 		if(velocityX!=0) {
 			ah.setCurrentAnimation(moveAnimation);
 		}else {
-			
+//			System.out.println("idle");
 			moveAnimation = new GaitCycle("run/walk",velocityX, (int)Math.signum(velocityX), this);
 			ah.setCurrentAnimation(new Idle("idle",this));
 			

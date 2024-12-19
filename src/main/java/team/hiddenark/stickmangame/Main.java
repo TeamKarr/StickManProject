@@ -59,7 +59,7 @@ public class Main extends GameWindow {
         ground.setMass(MassType.INFINITE);
         addPhysics(ground);
 
-        man = new StickmanMind(this,this.getWidth()/2,this.getHeight()-200,80, Color.GREEN);
+        man = new StickmanMind(this,this.getWidth()/2,this.getHeight()-200,60, Color.ORANGE, false);
 
         this.addObject(man);
         System.out.println(man);
@@ -83,9 +83,9 @@ public class Main extends GameWindow {
         super.gameLoop(deltaTime);
 
         if (keysPressed.contains(NativeKeyEvent.VC_LEFT)) {
-            man.moveSide(-4, 0.5);
+            man.moveSide(-2, 0.5);
         } else if (keysPressed.contains(NativeKeyEvent.VC_RIGHT)){
-            man.moveSide(4,0.5);
+            man.moveSide(2,0.5);
         } 
         if (keysPressed.contains(NativeKeyEvent.VC_UP)){
             man.tryJump(2);
@@ -106,8 +106,12 @@ public class Main extends GameWindow {
                 this.addObject(ball);
             }
             case NativeKeyEvent.VC_1 -> {
-                man.createPushWindowGoals(windows.get(0), 1);
-                man.addGoal(man.goalGen.createMoveXGoal(getWidth() / 2, 5, 0.5, 20));
+                man.createPushWindowGoals(windows.get(0), 1,2,1);
+                man.addGoal(man.goalGen.createMoveXGoal(getWidth() / 2, 2, 0.5, 20));
+            }
+            case NativeKeyEvent.VC_2 -> {
+                man.createPushWindowGoals(windows.get(0), -1,2,1);
+                man.addGoal(man.goalGen.createMoveXGoal(getWidth() / 2, 2, 0.5, 20));
             }
             case NativeKeyEvent.VC_OPEN_BRACKET -> windows.forEach(PhysicsObject::enableBody);
             case NativeKeyEvent.VC_CLOSE_BRACKET -> windows.forEach(PhysicsObject::disableBody);
@@ -121,7 +125,6 @@ public class Main extends GameWindow {
     }
 
     public static void main(String[] args) {
-        System.out.println("Hello world!");
         SwingUtilities.invokeLater(() -> {
             Main game = new Main();
             game.start();

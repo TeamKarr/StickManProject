@@ -25,13 +25,15 @@ public class GaitCycle extends Animation{
 		
 		
 	}
+	
+	
 	public void tick() {
 		direct = (int)Math.signum(velocity);
 		double speed = Math.abs(velocity);
 		double strideLength = Math.min(speed*speed+10, 40)+5; // Adjust this value for shorter or longer strides
 
 	    // Increment position to simulate forward movement
-		man.position.x += direct*speed;
+//		man.position.x += direct*speed;
 	    
 	    int footOffset = (int)Math.min(speed*2*direct,20);
 	    // Calculate the rotation angle for the walking cycle
@@ -83,10 +85,10 @@ public class GaitCycle extends Animation{
 	    double swingLevel = Math.PI/8; // Offset to simulate natural arm swinging
 	    double offset = 0.1;
 	    // Calculate arm angles based on walking cycle and direction
-	    if(man.pushing.get()) {
+	    if(man.pushing) {
 	    	//man.lhand.pos.x=(int) (man.position.x+40*direct);
-	    	man.lhand.pos.x = (int)Helper.incrementTowards(man.lhand.pos.x,man.position.x+50*direct ,2 );
-	    	man.rhand.pos.x = (int)Helper.incrementTowards(man.rhand.pos.x,man.position.x+50*direct ,2 );
+	    	man.lhand.pos.x = (int)Helper.incrementTowards(man.lhand.pos.x,man.position.x+man.pushReach*direct ,2 );
+	    	man.rhand.pos.x = (int)Helper.incrementTowards(man.rhand.pos.x,man.position.x+man.pushReach*direct ,2 );
 	    	
 	    	man.rhand.pos.y=(int) (man.position.y-100);
 	    	man.lhand.pos.y=(int) (man.position.y-120);
@@ -106,7 +108,7 @@ public class GaitCycle extends Animation{
 	    }
 	    // Update hip position with sinusoidal motion
 	    //hip.pos.x = (int)(position.x + hipHorizontalSwing);
-	    if(man.pushing.get()) {
+	    if(man.pushing) {
 	    Joint.inverseKinematic(man.shoulder, man.relbow, man.rhand, man.rhand.pos, -direct);
 	    Joint.inverseKinematic(man.shoulder, man.lelbow, man.lhand, man.lhand.pos, -direct);
 	    }

@@ -52,6 +52,8 @@ public class WindowHandle extends PhysicsObject {
 
     }
     
+   
+    
     private BodyFixture makeFixture() {
     	 Rectangle bounds = getBounds();
          lastBound = bounds;
@@ -70,8 +72,9 @@ public class WindowHandle extends PhysicsObject {
             return;
         }
 
-        Rectangle bounds = getBounds();
-        g.drawRect(bounds.x,bounds.y, bounds.width, bounds.height);
+//        ((Graphics2D) g).setStroke(new BasicStroke(2));
+//        Rectangle bounds = getBounds();
+//        g.drawRect(bounds.x,bounds.y, bounds.width, bounds.height);
     }
 
     @Override
@@ -98,22 +101,20 @@ public class WindowHandle extends PhysicsObject {
             // Remove existing fixtures
 
             
-            
             this.body.removeAllFixtures();
-            
             this.body.addFixture(this.makeFixture());
-            
             body.updateMass();
             body.getTransform().setTranslation(gameWindow.toVector2((int)bounds.getCenterX(),(int)bounds.getCenterY()));
             
             if (!enabled) {
+            	System.out.println("ran");
             	this.disableBody();
             }
             
 
             // Ensure the body is part of the world
 
-            System.out.println("Number of fixtures: " + body.getFixtureCount());
+//            System.out.println("Number of fixtures: " + body.getFixtureCount());
         }
 
         bounds = getBounds();
@@ -134,7 +135,11 @@ public class WindowHandle extends PhysicsObject {
     }
 
     public Rectangle getBounds(){
-        return WindowUtils.getWindowLocationAndSize(window);
+        Rectangle bounds = WindowUtils.getWindowLocationAndSize(window);
+        bounds.width-=10;
+        bounds.x+=5;
+        bounds.height-=5;
+        return bounds;
 
     }
 

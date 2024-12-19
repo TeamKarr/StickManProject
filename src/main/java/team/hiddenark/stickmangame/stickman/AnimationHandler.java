@@ -8,7 +8,7 @@ class AnimationHandler{
 	public void setCurrentAnimation(Animation animation) {
 		if (currentAnimation!=null&&animation.getLabel().equals(currentAnimation.getLabel()))return;
 		if(lock)return;
-		System.out.println(animation.getLabel());
+//		System.out.println(animation.getLabel());
 		currentAnimation = animation;
 	}
 	public void setCurrentAnimation(Animation animation, boolean lock) {
