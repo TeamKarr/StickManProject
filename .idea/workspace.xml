@@ -6,11 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="5d81f45e-a69d-4e39-94ea-c70e68671c6c" name="Changes" comment="Changes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/GameWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/GameWindow.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/stickman/Stickman.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/stickman/Stickman.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/stickman/StickmanMind.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/stickman/StickmanMind.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/window/WindowHandle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/window/WindowHandle.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/window/WindowHandleList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/window/WindowHandleList.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -29,7 +26,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="big_" />
+        <entry key="$PROJECT_DIR$" value="test_past" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />

@@ -77,7 +77,11 @@ public class Stickman {
 	public int pushReach = 40;
 	
 	public int getDirection(){
-		return (int) -Math.signum(velocityX);
+		if (velocityX > 0){
+			return -1;
+		} else{
+			return 1;
+		}
 	}
 	public void draw(Graphics2D window) {
 

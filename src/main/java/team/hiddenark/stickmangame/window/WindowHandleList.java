@@ -18,7 +18,7 @@ public class WindowHandleList extends ArrayList<WindowHandle> {
 
     public WindowHandleList(GameWindow mainWindow){
         this.mainWindow = mainWindow;
-        ignore = new String[]{"Movies & TV", "Windows Input Experience", "Program Manager", "Setup", mainWindow.getTitle()};
+        ignore = new String[]{"Movies1 & TV", "Windows Input Experience", "Program Manager", "Setup", "Recording toolbar", mainWindow.getTitle()};
     }
 
     public boolean contains(WinDef.HWND window){

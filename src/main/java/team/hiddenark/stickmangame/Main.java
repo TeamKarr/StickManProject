@@ -60,8 +60,7 @@ public class Main extends GameWindow {
         addPhysics(ground);
 
         man = new StickmanMind(this,this.getWidth()/2,this.getHeight()-200,60, new Color(232,93,0), false);
-
-
+        man.moveSide(-2, 0.5);
         this.addObject(man);
         System.out.println(man);
         
