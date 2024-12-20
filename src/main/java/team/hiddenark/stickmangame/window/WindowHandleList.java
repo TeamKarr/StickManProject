@@ -18,7 +18,16 @@ public class WindowHandleList extends ArrayList<WindowHandle> {
 
     public WindowHandleList(GameWindow mainWindow){
         this.mainWindow = mainWindow;
-        ignore = new String[]{"Movies & TV", "Windows Input Experience", "Program Manager", mainWindow.getTitle()};
+        ignore = new String[]{"Movies & TV", "Windows Input Experience", "Program Manager", "Setup", mainWindow.getTitle()};
+    }
+
+    public boolean contains(WinDef.HWND window){
+        for (WindowHandle w : this){
+            if (w.getHWND().equals(window)){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -60,7 +69,7 @@ public class WindowHandleList extends ArrayList<WindowHandle> {
             String title = WindowUtils.getWindowTitle(hWnd);
             char[] chars = new char[100];
             User32.INSTANCE.GetClassName(hWnd,chars,100);
-//            mainWindow.runAddAll();
+            mainWindow.runAddAll();
 
 //            add(hWnd);
 //            if (eventCode == 32768 && objectId == -8) {
@@ -106,7 +115,7 @@ public class WindowHandleList extends ArrayList<WindowHandle> {
 
     public WindowHandle get(WinDef.HWND window){
         for (WindowHandle w : this){
-            if (w.getHWND() == window){
+            if (w.getHWND().equals(window)){
                 return w;
             }
         }
@@ -143,6 +152,7 @@ public class WindowHandleList extends ArrayList<WindowHandle> {
 
     public WindowHandle getAndAdd(WinDef.HWND hwnd){
         WindowHandle window = this.get(hwnd);
+        System.out.println(window);
         if (window == null){
             window = new WindowHandle(mainWindow, hwnd);
             add(window);

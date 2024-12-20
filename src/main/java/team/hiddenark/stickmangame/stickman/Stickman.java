@@ -77,10 +77,10 @@ public class Stickman {
 	public int pushReach = 40;
 	
 	public int getDirection(){
-		return dir==Direction.RIGHT?1:-1;
+		return (int) -Math.signum(velocityX);
 	}
 	public void draw(Graphics2D window) {
-		
+
 		moveAnimation.velocity = velocityX;
 		
 		if(velocityX!=0) {
@@ -89,9 +89,9 @@ public class Stickman {
 //			System.out.println("idle");
 			moveAnimation = new GaitCycle("run/walk",velocityX, (int)Math.signum(velocityX), this);
 			ah.setCurrentAnimation(new Idle("idle",this));
-			
+
 		}
-		
+
 		ah.tick();
 	    hip.calculateAllPos();
 
@@ -125,6 +125,8 @@ public class Stickman {
 		window.draw(q);
 		
 	}
+
+
 	
 	public static int clamp(int val, int min, int max) {
 	    return Math.max(min, Math.min(max, val));

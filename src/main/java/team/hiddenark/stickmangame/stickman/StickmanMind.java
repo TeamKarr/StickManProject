@@ -24,7 +24,7 @@ public class StickmanMind extends PhysicsObject implements Thinker {
     private int x,y,w,h;
 
     private GameWindow window;
-    private	Stickman stickman;
+    public	Stickman stickman;
     private Color color;
 
 //    private ArrayList<Goal> goals = new ArrayList<Goal>();
@@ -48,19 +48,19 @@ public class StickmanMind extends PhysicsObject implements Thinker {
         Rectangle rect = new Rectangle(window.toPUnits(w),window.toPUnits(h));
 
         BodyFixture f = new BodyFixture(rect);
-        f.setFriction(3);
+        f.setFriction(0);
 //        f.setRestitution(0.4);
 
         b.addFixture(f);
         b.translate(window.toVector2(x,y));
         b.setAtRestDetectionEnabled(false);
-        b.setLinearDamping(01);
+        b.setLinearDamping(10);
 
         b.setMass(MassType.FIXED_ANGULAR_VELOCITY);
         this.body = b;
-        
+
         this.window.physics.addContactListener(new ContactListenerInstance());
-        
+
         this.setDefaultFilter();
 
         this.setVisible(true);
@@ -74,12 +74,6 @@ public class StickmanMind extends PhysicsObject implements Thinker {
     public void addGoal(Goal g){
         this.goals.add(g);
     }
-    
-    private int sign(double a) {
-    	if (a > 0) return 1;
-    	if (a < 0) return -1;
-    	return 0;
-    }
 
     private double boredom = 0;
     private double anger = 0;
@@ -91,9 +85,8 @@ public class StickmanMind extends PhysicsObject implements Thinker {
         Point p = window.toGraphicsPoint(body.getWorldCenter());
         this.x = p.x-this.w/2;
         this.y = p.y-this.h/2;
-        stickman.velocityX = window.toGUnits(body.getLinearVelocity().x)/75;
+        stickman.velocityX = window.toGUnits(body.getLinearVelocity().x)/75.0;
 //        stickman.velocityX = sign(stickman.velocityX)*Math.log(Math.abs(stickman.velocityX));
-        System.out.println((stickman.pushing?(stickman.pushReach/2-5)*stickman.getDirection():0));
         stickman.setX(getX()+w/2+(stickman.pushing?(stickman.pushReach/2-5)*stickman.getDirection():0));
         stickman.setY(y+h);
 //        goals.act();
@@ -101,7 +94,7 @@ public class StickmanMind extends PhysicsObject implements Thinker {
 
         if (goals.isEmpty()){
             if (boredom > 50 && random.nextInt(10) > 8){
-                createPushWindowGoals(window.getWindowHandleList().getTop(), 1, 2, random.nextInt(2)==1?1:-1);
+                createPushWindowGoals(window.getWindowHandleList().getTop(), random.nextInt(2)==1?1:-1, 2, 1);
             } else if (boredom > 10 && random.nextInt(20) > 8){
                 this.addGoal(wanderTo(random.nextInt(window.getWidth()),random.nextDouble(0.5,2)));
             }
@@ -132,35 +125,44 @@ public class StickmanMind extends PhysicsObject implements Thinker {
     @Override
     public void draw(Graphics g) {
 //        stickman.draw((Graphics2D)g);
-//        g.setColor(color);
-//        g.fillRect(x,y,w,h);
+//
         
         
         stickman.pushReach = (int)(this.w*0.6);
     	stickman.draw((Graphics2D)g);
 
-        // Antialiasing for smoother text/graphics
-        Graphics2D g2d = (Graphics2D) g.create();
-        g2d.setRenderingHint(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON
-        );
+    	if (window.debugMode){
 
-        int width = window.getWidth();
+            ((Graphics2D)g).setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
 
-        // Draw boredom bar
-        drawBar(g2d, "Boredom", boredom, boredomColor,
-                PANEL_PADDING, PANEL_PADDING, width - 2 * PANEL_PADDING);
+            g.setColor(color);
+            g.drawRect(x,y,w,h);
 
-        // Draw anger bar
-        int angerY = PANEL_PADDING + BAR_HEIGHT + BAR_SPACING;
-        drawBar(g2d, "Anger", anger, angerColor,
-                PANEL_PADDING, angerY, width - 2 * PANEL_PADDING);
+            // Antialiasing for smoother text/graphics
+            Graphics2D g2d = (Graphics2D) g.create();
+            g2d.setRenderingHint(
+                    RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON
+            );
 
-        // Draw curiosity bar
-        int curiosityY = angerY + BAR_HEIGHT + BAR_SPACING;
-        drawBar(g2d, "Curiosity", curiosity, curiosityColor,
-                PANEL_PADDING, curiosityY, width - 2 * PANEL_PADDING);
+            int width = window.getWidth();
+
+            // Draw boredom bar
+            drawBar(g2d, "Boredom", boredom, boredomColor,
+                    PANEL_PADDING, PANEL_PADDING, width - 2 * PANEL_PADDING);
+
+//            // Draw anger bar
+//            int angerY = PANEL_PADDING + BAR_HEIGHT + BAR_SPACING;
+//            drawBar(g2d, "Anger", anger, angerColor,
+//                    PANEL_PADDING, angerY, width - 2 * PANEL_PADDING);
+//
+//            // Draw curiosity bar
+//            int curiosityY = angerY + BAR_HEIGHT + BAR_SPACING;
+//            drawBar(g2d, "Curiosity", curiosity, curiosityColor,
+//                    PANEL_PADDING, curiosityY, width - 2 * PANEL_PADDING);
+
+        }
+
 
 
     }
@@ -266,6 +268,10 @@ public class StickmanMind extends PhysicsObject implements Thinker {
     	
 
     	
+    }
+
+    public void clearGoals(){
+        this.goals.clear();
     }
 
     public boolean waiting = false;

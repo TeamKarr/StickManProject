@@ -8,10 +8,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/GameWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/GameWindow.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/PhysicsObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/PhysicsObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/brain/Goal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/brain/Goal.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/brain/GoalGen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/brain/GoalGen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/brain/GoalQue.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/brain/GoalQue.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/stickman/Stickman.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/stickman/Stickman.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/stickman/StickmanMind.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/stickman/StickmanMind.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/window/WindowHandle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/window/WindowHandle.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/window/WindowHandleList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/team/hiddenark/stickmangame/window/WindowHandleList.java" afterDir="false" />
@@ -145,7 +142,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/main" />
+                        <option value="main" />
                       </list>
                     </value>
                   </entry>
@@ -160,6 +157,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Changes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changes" />
+    <MESSAGE value="fixed a lot of bugs" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed a lot of bugs" />
   </component>
 </project>

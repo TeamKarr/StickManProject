@@ -27,7 +27,6 @@ public class WindowHandle extends PhysicsObject {
     private GameWindow gameWindow;
 
     private boolean minimized;
-    private boolean drawDebug = false;
 
 //    private Body body;
 
@@ -38,17 +37,20 @@ public class WindowHandle extends PhysicsObject {
 
         this.gameWindow = gameWindow;
 
-       
+
                                                                                         
         this.body = new Body();
         
         body.addFixture(makeFixture());
         body.setMass(MassType.FIXED_ANGULAR_VELOCITY);
+        body.setLinearDamping(5);
         Rectangle bounds = getBounds();
         body.translate(gameWindow.toVector2((int)bounds.getCenterX(),(int)bounds.getCenterY()));
         body.setAtRestDetectionEnabled(false);
         
         this.disableBody();
+
+        System.out.println("made handle for " + this);
 
     }
     
@@ -57,22 +59,29 @@ public class WindowHandle extends PhysicsObject {
     private BodyFixture makeFixture() {
     	 Rectangle bounds = getBounds();
          lastBound = bounds;
+         if (bounds.width == 0 || bounds.height == 0) {
+            this.remove();
+            bounds.setSize(1,1);
+         }
          org.dyn4j.geometry.Rectangle rect = new org.dyn4j.geometry.Rectangle(gameWindow.toPUnits(bounds.width),gameWindow.toPUnits(bounds.height));
          
          BodyFixture fixture = new BodyFixture(rect);
-         fixture.setDensity(0.01);
+         fixture.setFriction(0);
+         fixture.setDensity(0.1/(gameWindow.toPUnits(bounds.width)*gameWindow.toPUnits(bounds.height)));
          return fixture;
     }
 
     @Override
     public void draw(Graphics g){
-        g.setColor(enabled? Color.GREEN : Color.RED);
+
 
         if (!User32.INSTANCE.IsWindow(window)){
             return;
         }
 
-        if (drawDebug){
+        if (gameWindow.debugMode){
+            g.setColor(enabled? Color.GREEN : Color.RED);
+            ((Graphics2D)g).setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
             Rectangle bounds = getBounds();
             g.drawRect(bounds.x,bounds.y, bounds.width, bounds.height);
         }
@@ -86,9 +95,14 @@ public class WindowHandle extends PhysicsObject {
             this.remove();
             return;
         }
-        
-        
         Rectangle bounds = getBounds();
+    	if (!(bounds.width > 0 && bounds.height > 0)){
+    	    this.remove();
+    	    return;
+        }
+        
+        
+
         if (lastBound.x == bounds.x && lastBound.y == bounds.y){
             Point p = gameWindow.toGraphicsPoint(body.getWorldCenter());
             if (enabled)
@@ -109,7 +123,7 @@ public class WindowHandle extends PhysicsObject {
             body.getTransform().setTranslation(gameWindow.toVector2((int)bounds.getCenterX(),(int)bounds.getCenterY()));
             
             if (!enabled) {
-            	System.out.println("ran");
+//            	System.out.println("ran");
             	this.disableBody();
             }
             
@@ -133,6 +147,7 @@ public class WindowHandle extends PhysicsObject {
     }
 
     public void sendToBack(){
+        System.out.println("Sending to back" + getTitle());
         HWND HWND_BOTTOM = new HWND(Pointer.createConstant(1));
         int SWP_NOSIZE = 0x0001;
         int SWP_NOMOVE = 0x0002;
@@ -147,9 +162,14 @@ public class WindowHandle extends PhysicsObject {
 
     public Rectangle getBounds(){
         Rectangle bounds = WindowUtils.getWindowLocationAndSize(window);
-        bounds.width -= 14;
-        bounds.height -= 7;
-        bounds.x += 7;
+        if (bounds.width <= 0 || bounds.height <=0) {
+            bounds.setSize(0,0);
+            return bounds;
+        }
+        bounds.width -= bounds.width > 14?14:0;
+        bounds.x += bounds.width > 14?7:0;
+        bounds.height -= bounds.height > 7?7:0;
+
         return bounds;
 
     }
@@ -175,4 +195,8 @@ public class WindowHandle extends PhysicsObject {
     }
 
 
+    @Override
+    public String toString() {
+        return "Title: " + getTitle() + " Bounds: " + getBounds() + " HWND: " + getHWND();
+    }
 }

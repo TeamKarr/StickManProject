@@ -59,7 +59,7 @@ public class Main extends GameWindow {
         ground.setMass(MassType.INFINITE);
         addPhysics(ground);
 
-        man = new StickmanMind(this,this.getWidth()/2,this.getHeight()-200,60, Color.ORANGE, false);
+        man = new StickmanMind(this,this.getWidth()/2,this.getHeight()-200,60, new Color(232,93,0), false);
 
 
         this.addObject(man);
@@ -83,14 +83,15 @@ public class Main extends GameWindow {
     public void gameLoop(double deltaTime) {
         super.gameLoop(deltaTime);
 
-        if (keysPressed.contains(NativeKeyEvent.VC_LEFT)) {
-            man.moveSide(-2, 0.5);
-        } else if (keysPressed.contains(NativeKeyEvent.VC_RIGHT)){
-            man.moveSide(2,0.5);
-        } 
-        if (keysPressed.contains(NativeKeyEvent.VC_UP)){
-            man.tryJump(2);
-        }
+        if (keysPressed.contains(NativeKeyEvent.VC_DOWN) || debugMode)
+            if (keysPressed.contains(NativeKeyEvent.VC_LEFT)) {
+                man.moveSide(-2, 0.5);
+            } else if (keysPressed.contains(NativeKeyEvent.VC_RIGHT)){
+                man.moveSide(2,0.5);
+            }
+            if (keysPressed.contains(NativeKeyEvent.VC_UP)){
+                man.tryJump(2);
+            }
 //
 //        System.out.println(this.getBottomBarHeight());
     }
@@ -114,9 +115,7 @@ public class Main extends GameWindow {
                 man.createPushWindowGoals(windows.getTop(), -1, 2, 1);
                 man.addGoal(man.goalGen.createMoveXGoal(getWidth() / 2, 2, 0.5, 20));
             }
-            case NativeKeyEvent.VC_3 -> {
-                windows.getTop().sendToBack();
-            }
+            case NativeKeyEvent.VC_3 -> windows.getTop().sendToBack();
             case NativeKeyEvent.VC_0 -> {
                 if (man.waiting){
                     man.goals.remove(0);
@@ -125,9 +124,13 @@ public class Main extends GameWindow {
                     man.goals.add(0,man.goalGen.createWaitForGoal(()->false));
                     man.waiting = true;
                 }
-
             }
-            case NativeKeyEvent.VC_DELETE -> man.goals.clear();
+            case NativeKeyEvent.VC_DELETE -> {
+                man.clearGoals();
+                man.stickman.pushing = false;
+            }
+            case NativeKeyEvent.VC_INSERT -> debugMode=!debugMode;
+            case NativeKeyEvent.VC_BACKSPACE -> man.goals.remove();
             case NativeKeyEvent.VC_OPEN_BRACKET -> windows.forEach(PhysicsObject::enableBody);
             case NativeKeyEvent.VC_CLOSE_BRACKET -> windows.forEach(PhysicsObject::disableBody);
         }

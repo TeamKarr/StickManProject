@@ -35,6 +35,8 @@ public class GameWindow extends JFrame implements NativeKeyListener {
     public World<Body> physics = new World<Body>();
     private boolean running = false; // Control for the game loop
 
+    public boolean debugMode = false;
+
     private WinDef.HWND mainWindow;
     private boolean reAddOpenWindows;
 
